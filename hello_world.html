@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>プロフィール</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0a0a0a;
+      color: gold;
+      font-family: 'Georgia', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background-color: #111;
+      border: 1px solid gold;
+      border-radius: 12px;
+      padding: 48px 56px;
+      max-width: 520px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #222;
+      border: 2px solid gold;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #b8960c;
+      margin-bottom: 32px;
+    }
+
+    .section {
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .section h2 {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #b8960c;
+      border-bottom: 1px solid #333;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+
+    .section p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #f0d060;
+    }
+
+    .hobbies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background-color: #1a1a00;
+      border: 1px solid gold;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.85rem;
+      color: gold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .tag:hover {
+      background-color: #2a2a00;
+    }
+
+    .tag.active {
+      background-color: gold;
+      color: #0a0a0a;
+    }
+
+    .hobby-image {
+      display: none;
+      margin-top: 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+
+    .hobby-image.visible {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hobby-visual {
+      width: 100%;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .hobby-visual .icon {
+      font-size: 56px;
+    }
+
+    .hobby-visual .label {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.05em;
+    }
+
+    .message {
+      font-size: 1.1rem;
+      color: #f0d060;
+      min-height: 1.6em;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: transparent;
+      border: 1px solid gold;
+      color: gold;
+      padding: 10px 28px;
+      font-size: 0.9rem;
+      font-family: 'Georgia', serif;
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #1a1a00;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="avatar">🧑</div>
+    <h1>山田 蓮</h1>
+    <p class="subtitle">Ren Yamada</p>
+
+    <div class="section">
+      <h2>仕事</h2>
+      <p>フリーランスのWebデザイナー。主にスタートアップ企業のブランディングやUIデザインを担当。東京を拠点に活動中。</p>
+    </div>
+
+    <div class="section">
+      <h2>趣味</h2>
+      <div class="hobbies">
+        <span class="tag" onclick="showHobby(this, 'photography')">写真撮影</span>
+        <span class="tag" onclick="showHobby(this, 'coffee')">コーヒー巡り</span>
+        <span class="tag" onclick="showHobby(this, 'reading')">読書</span>
+        <span class="tag" onclick="showHobby(this, 'hiking')">ハイキング</span>
+        <span class="tag" onclick="showHobby(this, 'jazz')">ジャズ鑑賞</span>
+      </div>
+
+      <div class="hobby-image" id="hobby-image">
+        <div class="hobby-visual" id="hobby-visual"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>一言</h2>
+      <p class="message" id="message">ボタンを押してください</p>
+      <div style="text-align: center;">
+        <button onclick="changeMessage()">次のメッセージ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const hobbies = {
+      photography: {
+        icon: '📷',
+        label: '光と影を切り取る瞬間',
+        gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+      },
+      coffee: {
+        icon: '☕',
+        label: '一杯に込められたストーリー',
+        gradient: 'linear-gradient(135deg, #2c1a0e 0%, #4a2c17 50%, #6b3e26 100%)',
+      },
+      reading: {
+        icon: '📚',
+        label: 'ページをめくるたびに広がる世界',
+        gradient: 'linear-gradient(135deg, #0d2b1d 0%, #1a4731 50%, #1e6b45 100%)',
+      },
+      hiking: {
+        icon: '🏔️',
+        label: '頂上からの景色が全てを癒す',
+        gradient: 'linear-gradient(135deg, #0a1628 0%, #1a3a5c 50%, #2e6b9e 100%)',
+      },
+      jazz: {
+        icon: '🎷',
+        label: '即興の音が心を自由にする',
+        gradient: 'linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #4a2880 100%)',
+      },
+    };
+
+    let activeTag = null;
+
+    function showHobby(tag, key) {
+      const imageBox = document.getElementById('hobby-image');
+      const visual = document.getElementById('hobby-visual');
+      const hobby = hobbies[key];
+
+      if (activeTag === tag) {
+        tag.classList.remove('active');
+        imageBox.classList.remove('visible');
+        activeTag = null;
+        return;
+      }
+
+      if (activeTag) activeTag.classList.remove('active');
+      tag.classList.add('active');
+      activeTag = tag;
+
+      visual.style.background = hobby.gradient;
+      visual.innerHTML = `<span class="icon">${hobby.icon}</span><span class="label">${hobby.label}</span>`;
+
+      imageBox.classList.remove('visible');
+      void imageBox.offsetWidth;
+      imageBox.classList.add('visible');
+    }
+
+    const messages = [
+      "デザインは問題を解決する手段です。",
+      "コーヒーなしでは仕事ができません。",
+      "いい写真は、いい観察眼から生まれる。",
+      "山の頂上からの景色は格別です。",
+      "ジャズは人生のBGMに最適。",
+      "シンプルこそが最高のデザイン。",
+    ];
+    let index = 0;
+
+    function changeMessage() {
+      document.getElementById('message').textContent = messages[index];
+      index = (index + 1) % messages.length;
+    }
+  </script>
+</body>
+</html>
