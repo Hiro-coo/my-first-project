@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マジごっこ｜AIごっこ遊びサービス｜保育園・幼稚園向け</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --p1: #7C3AED;
+      --p2: #4F46E5;
+      --coral: #FF6B35;
+      --coral-l: #FF8C5A;
+      --sky: #38BDF8;
+      --mint: #10B981;
+      --yellow: #FBBF24;
+      --dark: #0F172A;
+      --dark2: #1E293B;
+      --gray: #64748B;
+      --muted: #94A3B8;
+      --light: #F8FAFF;
+      --white: #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      color: var(--dark);
+      background: var(--white);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--p1); border-radius: 3px; }
+
+    /* ─── UTILITIES ─── */
+    .inner { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    .grad-text {
+      background: linear-gradient(135deg, var(--p1), var(--sky));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(124,58,237,0.1);
+      color: var(--p1);
+      border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 99px;
+      padding: 5px 16px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── FADE-IN ANIMATION ─── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up:nth-child(2) { transition-delay: 0.1s; }
+    .fade-up:nth-child(3) { transition-delay: 0.2s; }
+    .fade-up:nth-child(4) { transition-delay: 0.3s; }
+    .fade-up:nth-child(5) { transition-delay: 0.4s; }
+    .fade-up:nth-child(6) { transition-delay: 0.5s; }
+
+    /* ─────────────────────────────
+       NAV
+    ───────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(124,58,237,0.1);
+      transition: box-shadow 0.3s;
+    }
+    nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+
+    .nav-logo {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, var(--p1), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .nav-link { font-size: 0.88rem; font-weight: 500; color: var(--gray); text-decoration: none; transition: color 0.2s; }
+    .nav-link:hover { color: var(--p1); }
+
+    .nav-cta {
+      background: linear-gradient(135deg, var(--p1), var(--p2));
+      color: #fff;
+      padding: 9px 22px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+    }
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.45); }
+
+    /* ─────────────────────────────
+       HERO
+    ───────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      padding: 120px 24px 80px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(160deg, #F5F0FF 0%, #EEF2FF 40%, #E0F7FF 100%);
+    }
+
+    /* mesh blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .blob-1 { width: 600px; height: 600px; background: var(--p1); top: -200px; right: -150px; animation: float 8s ease-in-out infinite; }
+    .blob-2 { width: 400px; height: 400px; background: var(--sky); bottom: -100px; left: -100px; animation: float 10s ease-in-out infinite reverse; }
+    .blob-3 { width: 300px; height: 300px; background: var(--coral); top: 30%; left: 30%; animation: float 12s ease-in-out infinite; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%       { transform: translate(20px, -30px) scale(1.05); }
+      66%       { transform: translate(-15px, 20px) scale(0.95); }
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-left {}
+
+    .hero-badge { margin-bottom: 20px; }
+
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+
+    .hero p.lead {
+      font-size: 1rem;
+      color: var(--gray);
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-grad {
+      background: linear-gradient(135deg, var(--coral), #FF4500);
+      color: #fff;
+      padding: 16px 36px;
+      border-radius: 99px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 6px 24px rgba(255,107,53,0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-grad:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(255,107,53,0.5); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.7);
+      color: var(--p1);
+      padding: 15px 28px;
+      border-radius: 99px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1.5px solid rgba(124,58,237,0.3);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, border-color 0.2s;
+      display: inline-block;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.95); border-color: var(--p1); }
+
+    /* floating scene cards (right side) */
+    .hero-right {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .scene-card {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 20px;
+      padding: 22px 18px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(79,70,229,0.1);
+      transition: transform 0.25s, box-shadow 0.25s;
+      cursor: default;
+    }
+    .scene-card:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 16px 40px rgba(79,70,229,0.18); }
+    .scene-card:nth-child(even) { margin-top: 24px; }
+    .scene-card .icon { font-size: 2.6rem; margin-bottom: 8px; display: block; }
+    .scene-card .label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gray);
+      letter-spacing: 0.03em;
+    }
+    .scene-card .sub {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* ─────────────────────────────
+       LOGOS (social proof)
+    ───────────────────────────── */
+    .logos-bar {
+      background: var(--white);
+      padding: 28px 24px;
+      border-top: 1px solid #F1F5F9;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .logos-bar .inner {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .logos-bar .label { font-size: 0.78rem; color: var(--muted); font-weight: 600; letter-spacing: 0.06em; white-space: nowrap; }
+    .logo-item {
+      background: var(--light);
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 8px 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--gray);
+      white-space: nowrap;
+    }
+
+    /* ─────────────────────────────
+       SECTION BASE
+    ───────────────────────────── */
+    section { padding: 96px 0; }
+
+    .section-header { margin-bottom: 56px; }
+    .section-header.center { text-align: center; }
+    .section-header.center .section-desc { margin: 0 auto; }
+
+    .section-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--p1);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 2px;
+      background: var(--p1);
+      border-radius: 1px;
+    }
+    .section-header.center .section-eyebrow { justify-content: center; }
+    .section-header.center .section-eyebrow::before { display: none; }
+
+    .section-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+    .section-desc {
+      font-size: 0.95rem;
+      color: var(--gray);
+      max-width: 560px;
+      line-height: 1.8;
+    }
+
+    /* ─────────────────────────────
+       PROBLEMS
+    ───────────────────────────── */
+    .problems { background: var(--light); padding: 80px 0; }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .problem-card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 28px 24px;
+      border: 1px solid #E2E8F0;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .problem-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--p1), var(--sky));
+    }
+    .problem-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.07); }
+    .problem-card .icon { font-size: 1.8rem; margin-bottom: 12px; display: block; }
+    .problem-card p { font-size: 0.88rem; font-weight: 600; color: var(--dark2); line-height: 1.6; }
+
+    /* ─────────────────────────────
+       FEATURES
+    ───────────────────────────── */
+    .features { background: var(--white); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 720px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid #E2E8F0;
+      border-radius: 22px;
+      padding: 32px 28px;
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(124,58,237,0.04), rgba(56,189,248,0.04));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(79,70,229,0.12);
+      border-color: rgba(124,58,237,0.3);
+    }
+    .feature-card:hover::after { opacity: 1; }
+
+    .feature-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .feature-card p {
+      font-size: 0.85rem;
+      color: var(--gray);
+      line-height: 1.75;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─────────────────────────────
+       BENEFITS
+    ───────────────────────────── */
+    .benefits {
+      background: linear-gradient(135deg, var(--dark) 0%, #1a1040 50%, #0c1830 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .benefits .blob-bg {
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .benefits .blob-bg-1 { background: var(--p1); top: -100px; right: -100px; }
+    .benefits .blob-bg-2 { background: var(--sky); bottom: -100px; left: -50px; }
+
+    .benefits .section-eyebrow { color: var(--yellow); }
+    .benefits .section-eyebrow::before { background: var(--yellow); }
+    .benefits .section-title { color: var(--white); }
+    .benefits .section-desc { color: var(--muted); }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .benefit-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 32px 24px;
+      backdrop-filter: blur(8px);
+      transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .benefit-card:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-4px);
+    }
+
+    .benefit-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--yellow), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .benefit-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--white); margin-bottom: 8px; line-height: 1.5; }
+    .benefit-card p { font-size: 0.8rem; color: var(--muted); }
+
+    /* ─────────────────────────────
+       HOW IT WORKS
+    ───────────────────────────── */
+    .how { background: var(--light); }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+      margin-top: 56px;
+    }
+    @media (max-width: 720px) {
+      .steps-grid { grid-template-columns: 1fr; gap: 24px; }
+      .step-connector { display: none; }
+    }
+
+    .step-item {
+      text-align: center;
+      padding: 0 16px;
+      position: relative;
+    }
+
+    .step-item:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -10px;
+      top: 28px;
+      font-size: 1.2rem;
+      color: #CBD5E1;
+      z-index: 1;
+    }
+
+    .step-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--p1), var(--p2));
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 6px 20px rgba(124,58,237,0.35);
+    }
+
+    .step-item h3 { font-size: 0.9rem; font-weight: 800; margin-bottom: 8px; }
+    .step-item p { font-size: 0.8rem; color: var(--gray); line-height: 1.7; }
+
+    /* ─────────────────────────────
+       TESTIMONIALS
+    ───────────────────────────── */
+    .voices { background: var(--white); }
+
+    .voices-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 720px) {
+      .voices-grid { grid-template-columns: 1fr; }
+    }
+
+    .voice-card {
+      background: var(--light);
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      padding: 28px 24px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .voice-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.07); }
+
+    .voice-stars { display: flex; gap: 3px; margin-bottom: 14px; }
+    .star {
+      width: 16px; height: 16px;
+      background: var(--yellow);
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    }
+
+    .voice-quote {
+      font-size: 0.86rem;
+      color: var(--dark2);
+      line-height: 1.8;
+      margin-bottom: 20px;
+      position: relative;
+      padding-left: 16px;
+    }
+    .voice-quote::before {
+      content: '"';
+      position: absolute;
+      left: 0;
+      top: -4px;
+      font-size: 2rem;
+      color: var(--p1);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      line-height: 1;
+      opacity: 0.4;
+    }
+
+    .voice-meta { display: flex; align-items: center; gap: 12px; }
+    .voice-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E9D5FF, #BFDBFE);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .voice-name { font-size: 0.83rem; font-weight: 700; }
+    .voice-org  { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+
+    /* ─────────────────────────────
+       CTA SECTION
+    ───────────────────────────── */
+    .cta-wrap {
+      padding: 96px 24px;
+      background: linear-gradient(135deg, var(--p1) 0%, #4338CA 50%, var(--p2) 100%);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .cta-wrap .blob-c1 {
+      position: absolute;
+      width: 400px; height: 400px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      top: -100px; right: -80px;
+      pointer-events: none;
+    }
+    .cta-wrap .blob-c2 {
+      position: absolute;
+      width: 300px; height: 300px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+      bottom: -60px; left: -60px;
+      pointer-events: none;
+    }
+
+    .cta-wrap h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+      position: relative;
+    }
+    .cta-wrap p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .btn-white {
+      background: var(--white);
+      color: var(--p1);
+      padding: 18px 52px;
+      border-radius: 99px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .btn-white:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(0,0,0,0.28); }
+
+    .cta-note {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.55);
+      margin-top: 18px;
+      position: relative;
+    }
+
+    /* ─────────────────────────────
+       FOOTER
+    ───────────────────────────── */
+    footer {
+      background: var(--dark);
+      color: var(--muted);
+      padding: 40px 24px;
+    }
+    .footer-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--p1), var(--coral));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    footer p { font-size: 0.8rem; }
+
+    /* ─────────────────────────────
+       MODAL
+    ───────────────────────────── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+      animation: popIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.88) translateY(16px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header { margin-bottom: 24px; }
+    .modal-header h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+    .modal-header p { font-size: 0.85rem; color: var(--gray); }
+
+    .close-btn {
+      position: absolute;
+      top: 18px; right: 20px;
+      background: var(--light);
+      border: none;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .close-btn:hover { background: #E2E8F0; color: var(--dark); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.9rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      color: var(--dark);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--white);
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--p1);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+    }
+    .form-group textarea { resize: vertical; min-height: 88px; }
+
+    .form-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--p1), var(--p2));
+      color: #fff;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    .form-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-right .nav-link { display: none; }
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero-right { grid-template-columns: repeat(3, 1fr); }
+      .scene-card:nth-child(even) { margin-top: 0; }
+      .features-grid { grid-template-columns: 1fr; }
+      .voices-grid { grid-template-columns: 1fr; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .step-item:not(:last-child)::after { display: none; }
+      .modal { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav id="navbar">
+  <div class="nav-logo">マジごっこ</div>
+  <div class="nav-right">
+    <a class="nav-link" href="#features">特徴</a>
+    <a class="nav-link" href="#benefits">導入効果</a>
+    <a class="nav-link" href="#how">導入の流れ</a>
+    <button class="nav-cta" onclick="openModal()">無料で資料を見る</button>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="tag-pill">✨ AI × ごっこ遊び　新感覚の保育サービス</span>
+      </div>
+      <h1>子どもの<br>「なりたい」を<br><span class="grad-text">AIが叶える。</span></h1>
+      <p class="lead">
+        マジごっこは、AIが本格的な相手役になるごっこ遊びサービスです。<br>
+        0〜8歳の子どもたちの想像力・言語力・社会性を<br>楽しみながら育てます。
+      </p>
+      <div class="hero-btns">
+        <button class="btn-grad" onclick="openModal()">
+          📄 無料で資料請求する
+        </button>
+        <a class="btn-ghost" href="#features">特徴を見る →</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="scene-card">
+        <span class="icon">👨‍⚕️</span>
+        <div class="label">お医者さん</div>
+        <div class="sub">病院ごっこ</div>
+      </div>
+      <div class="scene-card">
+        <span class="icon">🍳</span>
+        <div class="label">シェフ</div>
+        <div class="sub">レストランごっこ</div>
+      </div>
+      <div class="scene-card">
+        <span class="icon">🚒</span>
+        <div class="label">消防士</div>
+        <div class="sub">救助ごっこ</div>
+      </div>
+      <div class="scene-card">
+        <span class="icon">🚀</span>
+        <div class="label">宇宙飛行士</div>
+        <div class="sub">宇宙探検ごっこ</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LOGOS BAR ─── -->
+<div class="logos-bar">
+  <div class="inner">
+    <span class="label">全国の保育園・幼稚園に導入されています</span>
+    <div class="logo-item">🌸 さくら保育園</div>
+    <div class="logo-item">🌻 ひまわり幼稚園</div>
+    <div class="logo-item">🍀 みどり保育所</div>
+    <div class="logo-item">⭐ ほし認定こども園</div>
+    <div class="logo-item">🌈 にじ保育園</div>
+  </div>
+</div>
+
+<!-- ─── PROBLEMS ─── -->
+<section class="problems">
+  <div class="inner">
+    <div class="section-header center">
+      <div class="section-eyebrow">こんなお悩みありませんか？</div>
+      <h2 class="section-title">現場の先生たちが抱える<br>「困った」を解決します</h2>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card fade-up">
+        <span class="icon">⏰</span>
+        <p>ごっこ遊びに付き合う時間・人手が足りない</p>
+      </div>
+      <div class="problem-card fade-up">
+        <span class="icon">😴</span>
+        <p>子どもが夢中になれる活動のアイデアが尽きてきた</p>
+      </div>
+      <div class="problem-card fade-up">
+        <span class="icon">💻</span>
+        <p>ICT・AI教育を取り入れたいが何から始めればよいか分からない</p>
+      </div>
+      <div class="problem-card fade-up">
+        <span class="icon">🏆</span>
+        <p>「特色ある保育」で他の園との差別化を図りたい</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section class="features" id="features">
+  <div class="inner">
+    <div class="section-header center">
+      <div class="section-eyebrow">サービスの特徴</div>
+      <h2 class="section-title">マジごっこが選ばれる<br><span class="grad-text">6つの理由</span></h2>
+      <p class="section-desc">子どもの発達段階に合わせたAI設計で、遊びながら自然に力が育まれます。</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#EDE9FE,#C7D2FE)">🤖</div>
+        <h3>AIが本格的な相手役に</h3>
+        <p>AIが患者役・お客さん役などになりきり、子どもの言葉に自然に応答。リアルなロールプレイ体験を提供します。</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#DBEAFE,#BAE6FD)">🎨</div>
+        <h3>100種類以上のシナリオ</h3>
+        <p>病院・レストラン・消防署・宇宙など、子どもが憧れるシーンを豊富に収録。飽きずに長く使えます。</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#D1FAE5,#A7F3D0)">🛡️</div>
+        <h3>子ども向け安全設計</h3>
+        <p>不適切な発言フィルタリングを徹底実装。保護者・先生が安心して見守れる環境です。</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#FEF3C7,#FDE68A)">📊</div>
+        <h3>成長の記録・レポート</h3>
+        <p>遊びを通じて発揮した語彙・コミュニケーション力をダッシュボードで確認。保護者共有も簡単。</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#FCE7F3,#FBCFE8)">🖥️</div>
+        <h3>タブレット1台で完結</h3>
+        <p>既存のiPad・Androidにアプリを入れるだけ。IT担当者不要で現場の先生だけで運用できます。</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon-wrap" style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5)">🌏</div>
+        <h3>多言語対応</h3>
+        <p>日本語・英語・中国語など複数言語に対応。外国にルーツを持つ子どもも安心して使えます。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BENEFITS ─── -->
+<section class="benefits" id="benefits">
+  <div class="blob-bg blob-bg-1"></div>
+  <div class="blob-bg blob-bg-2"></div>
+  <div class="inner">
+    <div class="section-header">
+      <div class="section-eyebrow">導入効果</div>
+      <h2 class="section-title" style="color:#fff">導入園で実証された<br>リアルな数字</h2>
+      <p class="section-desc">全国の導入園から寄せられたフィードバックをもとにまとめました。</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card fade-up">
+        <div class="benefit-num">92%</div>
+        <h3>「また遊びたい」と言った子どもの割合</h3>
+        <p>高い継続利用率が子どもたちの本音を物語ります。</p>
+      </div>
+      <div class="benefit-card fade-up">
+        <div class="benefit-num">3×</div>
+        <h3>自由遊び中の会話量の増加</h3>
+        <p>マジごっこ後、友達同士のごっこ遊びも活発に。</p>
+      </div>
+      <div class="benefit-card fade-up">
+        <div class="benefit-num">88%</div>
+        <h3>保護者の満足度向上を実感した園の割合</h3>
+        <p>「AI教育を取り入れている園」として差別化できます。</p>
+      </div>
+      <div class="benefit-card fade-up">
+        <div class="benefit-num">1日</div>
+        <h3>申し込みから利用開始までの時間</h3>
+        <p>専任スタッフが初期設定をフルサポートします。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ─── -->
+<section class="how" id="how">
+  <div class="inner">
+    <div class="section-header center">
+      <div class="section-eyebrow">導入の流れ</div>
+      <h2 class="section-title">かんたん4ステップで<br>すぐに始められます</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item fade-up">
+        <div class="step-circle">1</div>
+        <h3>資料請求・<br>お問い合わせ</h3>
+        <p>ページ内のボタンからご連絡ください。1営業日以内にご返信します。</p>
+      </div>
+      <div class="step-item fade-up">
+        <div class="step-circle">2</div>
+        <h3>無料デモ体験<br>（30分）</h3>
+        <p>オンラインまたは現地でリアルな操作感をご体験いただけます。</p>
+      </div>
+      <div class="step-item fade-up">
+        <div class="step-circle">3</div>
+        <h3>プラン選択・<br>ご契約</h3>
+        <p>園の規模・ご予算に合わせたプランを月額制でご提案します。</p>
+      </div>
+      <div class="step-item fade-up">
+        <div class="step-circle">4</div>
+        <h3>導入・<br>運用開始</h3>
+        <p>設定から先生向け説明会まで担当者が無料でサポートします。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── VOICES ─── -->
+<section class="voices">
+  <div class="inner">
+    <div class="section-header center">
+      <div class="section-eyebrow">導入園の声</div>
+      <h2 class="section-title">現場の先生・園長先生から<br>喜びの声が届いています</h2>
+    </div>
+    <div class="voices-grid">
+      <div class="voice-card fade-up">
+        <div class="voice-stars">
+          <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        </div>
+        <p class="voice-quote">最初はAIと聞いて難しそうと思いましたが、子どもたちが直感的に使いこなしていて驚きました。お医者さんごっこをしながら語彙が増えたのが目に見えて分かります。</p>
+        <div class="voice-meta">
+          <div class="voice-avatar">👩</div>
+          <div>
+            <div class="voice-name">田中 恵子 先生</div>
+            <div class="voice-org">さくら保育園（東京都）　園長</div>
+          </div>
+        </div>
+      </div>
+      <div class="voice-card fade-up">
+        <div class="voice-stars">
+          <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        </div>
+        <p class="voice-quote">保護者からの反響がとても大きく、入園希望者が増えました。「AIを使った保育」というだけで説明会の参加者が2倍になりました。</p>
+        <div class="voice-meta">
+          <div class="voice-avatar">👨</div>
+          <div>
+            <div class="voice-name">鈴木 健一 先生</div>
+            <div class="voice-org">ひまわり幼稚園（大阪府）　園長</div>
+          </div>
+        </div>
+      </div>
+      <div class="voice-card fade-up">
+        <div class="voice-stars">
+          <div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div>
+        </div>
+        <p class="voice-quote">人手不足で悩んでいましたが、AIが遊び相手になってくれる時間は先生が他の子に集中できるので本当に助かっています。</p>
+        <div class="voice-meta">
+          <div class="voice-avatar">👩</div>
+          <div>
+            <div class="voice-name">山本 美咲 先生</div>
+            <div class="voice-org">みどり保育所（福岡県）　主任</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<div class="cta-wrap">
+  <div class="blob-c1"></div>
+  <div class="blob-c2"></div>
+  <h2>まずは無料の資料・デモで<br>体験してみてください</h2>
+  <p>導入費用・プラン内容・活用事例をまとめた資料を無料でお送りします。</p>
+  <button class="btn-white" onclick="openModal()">
+    📄 無料で資料請求・お問い合わせ
+  </button>
+  <p class="cta-note">※ 営業電話は一切行いません。返信はメールのみです。</p>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">マジごっこ | ごっこランド</div>
+    <p>© 2024 ごっこランド. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ─── MODAL ─── -->
+<div class="overlay" id="overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-header">
+      <h3>資料請求・お問い合わせ</h3>
+      <p>1営業日以内にメールにてご連絡いたします。</p>
+    </div>
+    <form onsubmit="submitForm(event)">
+      <div class="form-group">
+        <label>園の名称 *</label>
+        <input type="text" placeholder="〇〇保育園" required />
+      </div>
+      <div class="form-group">
+        <label>お名前 *</label>
+        <input type="text" placeholder="山田 太郎" required />
+      </div>
+      <div class="form-group">
+        <label>メールアドレス *</label>
+        <input type="email" placeholder="example@hoikuen.jp" required />
+      </div>
+      <div class="form-group">
+        <label>園の種別</label>
+        <select>
+          <option value="">選択してください</option>
+          <option>認可保育園</option>
+          <option>認定こども園</option>
+          <option>幼稚園</option>
+          <option>小規模保育所</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ご質問・ご要望</label>
+        <textarea placeholder="例：デモ体験を希望します。タブレットは10台あります。"></textarea>
+      </div>
+      <button type="submit" class="form-submit">送信する →</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  /* nav shadow on scroll */
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  /* scroll fade-in */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  /* modal */
+  function openModal() {
+    document.getElementById('overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
+  function submitForm(e) {
+    e.preventDefault();
+    document.querySelector('.modal').innerHTML = `
+      <div style="text-align:center;padding:32px 0">
+        <div style="font-size:3.5rem;margin-bottom:16px">✅</div>
+        <h3 style="font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:8px">送信完了しました！</h3>
+        <p style="color:#64748B;font-size:0.88rem;margin-bottom:28px;line-height:1.8">1営業日以内にメールにてご連絡いたします。<br>しばらくお待ちください。</p>
+        <button onclick="closeModal()" style="background:linear-gradient(135deg,#7C3AED,#4F46E5);color:#fff;padding:12px 36px;border-radius:99px;font-size:0.95rem;font-weight:700;border:none;cursor:pointer;font-family:inherit">閉じる</button>
+      </div>`;
+  }
+</script>
+</body>
+</html>
